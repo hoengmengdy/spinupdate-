@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f5ef">
+    <title>Spin & Win · Product Wheel</title>
+    <style>
+         :root {
+            color-scheme: light;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #252b29;
+            background: #f8f5ef;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            min-height: 100svh;
+        }
+        
+        main {
+            max-width: 940px;
+            margin: auto;
+            padding: 36px 20px 40px;
+            text-align: center;
+        }
+        
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 14px;
+            border: 1px solid #d6dcd1;
+            border-radius: 30px;
+            color: #526a53;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+        }
+        
+        h1 {
+            margin: 15px 0 8px;
+            font-size: clamp(36px, 7vw, 54px);
+            line-height: 1.1;
+            letter-spacing: -.05em;
+        }
+        
+        .intro {
+            margin: 0;
+            color: #72776f;
+            font-size: 15px;
+        }
+        
+        .wheel-area {
+            position: relative;
+            max-width: 900px;
+            margin: auto;
+            display: flow-root;
+        }
+
+        .spin-mascot {
+            position: absolute;
+            bottom: 32px;
+            width: min(160px, calc(50% - 286px));
+            height: auto;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .spin-mascot-left {
+            left: 0;
+        }
+
+        .spin-mascot-right {
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        .wheel-stage {
+            position: relative;
+            width: min(100%, 540px);
+            margin: 32px auto 26px;
+            padding: 12px;
+            border-radius: 50%;
+            background: #fffefa;
+            box-shadow: 0 0 0 1px #e0dfd6, 0 18px 48px #3c442c18;
+        }
+        
+        .wheel-stage::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 2px dotted #bec8b4;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        #wheel {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+            transform-origin: center;
+        }
+        
+        .pointer {
+            position: absolute;
+            z-index: 2;
+            width: 34px;
+            height: 48px;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 3px 2px #29342930);
+        }
+        
+        .wheel-hub {
+            position: absolute;
+            z-index: 1;
+            width: 18%;
+            aspect-ratio: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 6px solid #fffefa;
+            border-radius: 50%;
+            background: #fffefa;
+            box-shadow: 0 2px 10px #213a3929;
+            display: grid;
+            place-items: center;
+            pointer-events: none;
+        }
+        
+        .wheel-hub img {
+            display: block;
+            width: 88%;
+            height: 88%;
+            object-fit: contain;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        button {
+            font: inherit;
+            cursor: pointer;
+        }
+        
+        .spin-button {
+            display: block;
+            width: min(100%, 280px);
+            margin: auto;
+            padding: 17px 24px;
+            border: 0;
+            border-radius: 14px;
+            background: #283f33;
+            color: white;
+            font-size: 17px;
+            font-weight: 650;
+            box-shadow: 0 5px 0 #1a2a22;
+            transition: background .15s, transform .15s;
+        }
+        
+        .spin-button:hover:enabled {
+            background: #355841;
+            transform: translateY(-1px);
+        }
+        
+        .spin-button:disabled {
+            cursor: not-allowed;
+            background: #687d6e;
+        }
+        
+        button:focus-visible {
+            outline: 3px solid #bd802c;
+            outline-offset: 5px;
+        }
+        
+        .status {
+            min-height: 20px;
+            margin: 15px 0 0;
+            color: #737a70;
+            font-size: 13px;
+        }
+        
+        .image-warning {
+            color: #85541d;
+            font-size: 13px;
+        }
+        
+        dialog {
+            width: min(420px, calc(100% - 32px));
+            padding: 32px 26px;
+            border: 1px solid #e0dfd6;
+            border-radius: 24px;
+            text-align: center;
+            background: #fffefa;
+            color: #252b29;
+            box-shadow: 0 24px 80px #15201930;
+        }
+        
+        dialog::backdrop {
+            background: #15201980;
+            backdrop-filter: blur(5px);
+        }
+        
+        dialog h2 {
+            margin: 0 0 18px;
+            font-size: clamp(22px, 5vw, 27px);
+            letter-spacing: -.04em;
+        }
+        
+        .winning-image-wrap {
+            display: grid;
+            place-items: center;
+            height: 230px;
+            margin: 0 auto;
+            border-radius: 18px;
+            background: #f2f4eb;
+        }
+        
+        #winning-image {
+            display: block;
+            max-width: 85%;
+            width: auto;
+            height: auto;
+            max-height: 205px;
+            object-fit: contain;
+        }
+        
+        #winning-name {
+            margin: 18px 0 24px;
+            font-size: 21px;
+            font-weight: 650;
+        }
+        
+        dialog .spin-button {
+            width: 100%;
+        }
+        
+        @media (max-width: 740px) {
+            .wheel-area {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .wheel-stage {
+                grid-column: 1 / -1;
+            }
+
+            .spin-mascot {
+                position: static;
+                display: block;
+                width: 95px;
+                margin: -10px auto 16px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            main {
+                padding: 28px 14px;
+            }
+            .wheel-stage {
+                margin-top: 30px;
+                padding: 9px;
+            }
+            .wheel-hub {
+                border-width: 4px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+
+        <h1>បង្វិលដើម្បី ទទួលរង្វាន់</h1>
+
+        <div class="wheel-area">
+        <div class="wheel-stage">
+            <!-- The pointer stays fixed while the SVG beneath it rotates. -->
+            <svg class="pointer" viewBox="0 0 34 48" aria-hidden="true"><path d="M3 3 Q17 -2 31 3 L31 17 Q31 22 27 27 L17 46 L7 27 Q3 22 3 17 Z" fill="#283f33" stroke="#fffefa" stroke-width="3"/></svg>
+            <svg id="wheel" viewBox="0 0 600 600" role="img" aria-label="Eight equal colorful sections, each showing one product image">
+        <g id="segments"></g>
+        <g id="product-images"></g>
+      </svg>
+            <div class="wheel-hub"><img src="images/LSV%20logo.png" alt="LSV logo" width="3478" height="1670"></div>
+        </div>
+        <img class="spin-mascot spin-mascot-left" src="images/spin-mascot.png" alt="Happy cabbage bunny inviting you to spin the wheel" width="1024" height="1536" decoding="async">
+        <img class="spin-mascot spin-mascot-right" src="images/spin-mascot.png" alt="" aria-hidden="true" width="1024" height="1536" decoding="async">
+        </div>
+        <button id="spin-button" class="spin-button" type="button">បង្វិលឥឡូវនេះ ↗</button>
+        <p id="status" class="sr-only" role="status" aria-live="polite"></p>
+        <p id="image-warning" class="image-warning" hidden>Some product images could not load. A placeholder is shown.</p>
+    </main>
+    <dialog id="result-dialog" aria-labelledby="result-title">
+        <h2 id="result-title">🎉 Congratulations!</h2>
+        <div class="winning-image-wrap"><img id="winning-image" alt=""></div>
+        <p id="winning-name"></p>
+        <button id="close-result" class="spin-button" type="button">បិទ</button>
+    </dialog>
+    <script>
+        // Replace images/product1.png through images/product8.png with your products.
+        // Update the names here; use an empty name to omit it from the result popup.
+        const products = [{
+            name: "Product 1",
+            image: "images/product1.png"
+        }, {
+            name: "Product 2",
+            image: "images/product2.png"
+        }, {
+            name: "Product 3",
+            image: "images/product3.png"
+        }, {
+            name: "Product 4",
+            image: "images/product4.png"
+        }, {
+            name: "Product 5",
+            image: "images/product5.png"
+        }, {
+            name: "Product 6",
+            image: "images/product6.png"
+        }, {
+            name: "Product 7",
+            image: "images/product7.png"
+        }, {
+            name: "Product 8",
+            image: "images/product8.png"
+        }];
+
+        const colors = ["#f4c870", "#eeaaa0", "#bfcbe7", "#b4d3d1", "#cbd7a6", "#f0cdac", "#d6bddd", "#a9c9b1"];
+        const svgNS = "http://www.w3.org/2000/svg";
+        const segmentAngle = 360 / products.length;
+        const wheel = document.getElementById("wheel");
+        const spinButton = document.getElementById("spin-button");
+        const status = document.getElementById("status");
+        const dialog = document.getElementById("result-dialog");
+        const winningImage = document.getElementById("winning-image");
+        const winningName = document.getElementById("winning-name");
+        const fallbackImage = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="35" y="5" width="30" height="22" rx="5" fill="#33483e"/><rect x="20" y="25" width="60" height="120" rx="18" fill="#faf9ed" stroke="#33483e" stroke-width="3"/><rect x="26" y="65" width="48" height="50" rx="5" fill="#bdd0af"/><path d="M50 75v30m-15-15h30" stroke="#33483e" stroke-width="4"/></svg>');
+        let rotation = 0;
+        let isSpinning = false;
+        let hasSpun = false;
+        const spinStorageKey = "lsv-product-wheel:spin:v1";
+
+        function showUsedSpin(record) {
+            hasSpun = true;
+            spinButton.disabled = true;
+            spinButton.textContent = "អ្នកបានបង្វិលរួចហើយ";
+            status.classList.remove("sr-only");
+            status.classList.add("status");
+            const winner = record && products[record.winningIndex];
+            status.textContent = "អ្នកអាចបង្វិលបានតែម្តងប៉ុណ្ណោះ។";
+            if (winner && winner.name) status.textContent += ` រង្វាន់របស់អ្នក៖ ${winner.name}`;
+            if (!isSpinning && record && Number.isFinite(record.rotation)) {
+                rotation = record.rotation;
+                wheel.style.transform = `rotate(${rotation}deg)`;
+            }
+        }
+
+        function showStorageError() {
+            spinButton.disabled = true;
+            status.classList.remove("sr-only");
+            status.classList.add("status");
+            status.textContent = "សូមអនុញ្ញាតឱ្យ browser រក្សាទុកទិន្នន័យ រួចបើកទំព័រឡើងវិញ។";
+        }
+
+        function restoreSpin() {
+            try {
+                const saved = localStorage.getItem(spinStorageKey);
+                if (saved !== null) {
+                    let record;
+                    try { record = JSON.parse(saved); } catch (_) { /* Keep an existing claim locked. */ }
+                    showUsedSpin(record);
+                }
+            } catch (_) {
+                showStorageError();
+            }
+        }
+
+        // A second tab also loses its turn as soon as a spin is saved.
+        window.addEventListener("storage", event => {
+            if (event.key === spinStorageKey && event.newValue !== null) restoreSpin();
+        });
+        restoreSpin();
+
+        function svgElement(tag, attributes) {
+            const element = document.createElementNS(svgNS, tag);
+            Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+            return element;
+        }
+
+        function point(angle, radius) {
+            const radians = angle * Math.PI / 180;
+            return [300 + radius * Math.sin(radians), 300 - radius * Math.cos(radians)];
+        }
+
+        products.forEach((product, index) => {
+            const angle = index * segmentAngle;
+            const start = point(angle - segmentAngle / 2, 278);
+            const end = point(angle + segmentAngle / 2, 278);
+            document.getElementById("segments").append(svgElement("path", {
+                d: `M300 300 L${start.join(" ")} A278 278 0 0 1 ${end.join(" ")} Z`,
+                fill: colors[index],
+                stroke: "#fffefa",
+                "stroke-width": 2
+            }));
+
+            // This whole rectangle fits within the wedge, including its inner corners.
+            // 'meet' contains the full product and keeps its original aspect ratio.
+            // Rotating around the hub points each product's top toward the outer rim.
+            const group = svgElement("g", {
+                transform: `rotate(${angle} 300 300)`
+            });
+            const image = svgElement("image", {
+                href: product.image,
+                x: 254,
+                y: 40,
+                width: 92,
+                height: 144,
+                preserveAspectRatio: "xMidYMid meet"
+            });
+            image.addEventListener("error", () => {
+                image.setAttribute("href", fallbackImage);
+                document.getElementById("image-warning").hidden = false;
+            }, {
+                once: true
+            });
+            group.append(image);
+            document.getElementById("product-images").append(group);
+        });
+
+        const normalize = angle => ((angle % 360) + 360) % 360;
+
+        function randomIndex() {
+            // Rejection sampling also stays unbiased if the product count changes.
+            const values = new Uint32Array(1);
+            const limit = Math.floor(4294967296 / products.length) * products.length;
+            do {
+                crypto.getRandomValues(values);
+            } while (values[0] >= limit);
+            return values[0] % products.length;
+        }
+
+        winningImage.addEventListener("error", () => {
+            if (winningImage.getAttribute("src") !== fallbackImage) winningImage.src = fallbackImage;
+        });
+
+        async function spin() {
+            if (hasSpun || isSpinning || spinButton.disabled || dialog.open) return;
+            isSpinning = true;
+            spinButton.disabled = true;
+            spinButton.textContent = "Spinning…";
+            status.textContent = "Finding your lucky product…";
+            const selected = randomIndex();
+            // Land safely inside the selected segment, with a little variation.
+            const offset = (Math.random() - 0.5) * segmentAngle * 0.5;
+            const target = normalize(-selected * segmentAngle + offset);
+            const nextRotation = rotation + 360 * (5 + Math.floor(Math.random() * 3)) + normalize(target - normalize(rotation));
+            const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const finalRotation = normalize(nextRotation);
+            const winningIndex = Math.round(normalize(-finalRotation) / segmentAngle) % products.length;
+            const record = { winningIndex, rotation: finalRotation };
+
+            try {
+                // Save before animation so refreshing cannot grant another turn.
+                const claimSpin = () => {
+                    if (localStorage.getItem(spinStorageKey) !== null) return false;
+                    localStorage.setItem(spinStorageKey, JSON.stringify(record));
+                    hasSpun = true;
+                    return true;
+                };
+                const claimed = navigator.locks
+                    ? await navigator.locks.request(spinStorageKey, claimSpin)
+                    : claimSpin();
+                if (!claimed) {
+                    isSpinning = false;
+                    restoreSpin();
+                    return;
+                }
+            } catch (_) {
+                isSpinning = false;
+                spinButton.textContent = "មិនអាចបង្វិលបាន";
+                showStorageError();
+                return;
+            }
+
+            const showWinner = () => {
+                rotation = finalRotation;
+                wheel.style.transform = `rotate(${rotation}deg)`;
+                const winner = products[winningIndex];
+                winningImage.src = winner.image;
+                winningImage.alt = winner.name || "Winning product";
+                winningName.textContent = winner.name || "";
+                winningName.hidden = !winner.name;
+                if (!dialog.open) dialog.showModal();
+            };
+
+            try {
+                const animation = wheel.animate([{
+                    transform: `rotate(${rotation}deg)`
+                }, {
+                    transform: `rotate(${nextRotation}deg)`
+                }], {
+                    duration: reducedMotion ? 120 : 5800,
+                    easing: "cubic-bezier(0.12, 0.72, 0.12, 1)",
+                    fill: "forwards"
+                });
+                await animation.finished;
+                showWinner();
+                animation.cancel();
+            } catch (error) {
+                // An interrupted animation still awards the already saved prize.
+                showWinner();
+                console.error(error);
+            } finally {
+                isSpinning = false;
+                showUsedSpin(record);
+            }
+        }
+
+        spinButton.addEventListener("click", spin);
+        document.getElementById("close-result").addEventListener("click", () => dialog.close());
+        dialog.addEventListener("close", () => {
+            status.tabIndex = -1;
+            status.focus();
+        });
+    </script>
+</body>
+
+</html>

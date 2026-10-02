@@ -1,0 +1,12 @@
+Generated with the built-in image_gen tool using the user-provided cabbage bunny character sheet as reference.
+
+Use case: stylized-concept.
+Asset type: transparent mascot PNG for the user's Spin & Win product wheel webpage.
+Input image: the most recently attached cabbage bunny character sheet is the identity and illustration-style reference.
+Primary request: create ONE polished full-body picture of this same adorable cream-colored bunny in its napa cabbage costume, joyful and excited to invite someone to spin a prize wheel.
+Subject: maintain the reference's large glossy olive-green eyes, cream fur, tiny pink nose, rosy cheeks, open happy smile, fluffy pale tail, rounded short body, detailed bright-green cabbage-leaf hoodie with pale white leaf veins, long cabbage bunny ears, matching leafy sleeves, cream cabbage-striped belly, green zipper and little leaf zipper pull.
+Pose: front three-quarter view, both ears fully visible, standing cheerfully on both feet; one paw lifted in a welcoming presenting gesture toward the side, the other paw by its chest. Friendly delighted expression matching the HAPPY/EXCITED reference.
+Style/medium: high-quality soft 3D storybook character illustration, consistent with the provided character sheet, detailed natural leaf texture, soft studio lighting, gentle shading.
+Composition: single centered isolated full-body character; include every ear tip, paw, foot and tail, with a small clear margin. Optimized to read well as a small mascot beside a webpage wheel.
+Scene/backdrop: genuinely transparent background with alpha. No scene or floor.
+Constraints: one bunny only. No wheel, no labels, no text, no prices, no watermark, no frame, no character-sheet grid. Preserve character identity and costume design.
